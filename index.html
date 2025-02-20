@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crypto Technical Analysis</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        #results { margin-top: 20px; max-width: 800px; margin-left: auto; margin-right: auto; text-align: left; }
+        #in-depth { margin-top: 20px; padding: 10px; border-top: 1px solid #ccc; }
+        #in-depth h3 { margin-top: 0; }
+    </style>
+</head>
+<body>
+    <h1>Cryptocurrency Technical Analysis</h1>
+    <input type="text" id="coinSearch" placeholder="Enter cryptocurrency (e.g., Bitcoin or BTC)">
+    <button onclick="getAnalysis()">Search</button>
+    <div id="results"></div>
+
+    <script>
+        function getAnalysis() {
+            const coin = document.getElementById('coinSearch').value;
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<p>Loading...</p>';
+            fetch(`/api/analyze/${coin}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        resultsDiv.innerHTML = `<p>${data.error}</p>`;
+                    } else {
+                        resultsDiv.innerHTML = `
+                            <p><strong>Current Price:</strong> $${data.current_price}</p>
+                            <p><strong>Suggested Entry:</strong> Buy near $${data.entry}</p>
+                            <p><strong>Suggested Exit:</strong> Sell near $${data.exit}</p>
+                            <p><strong>Stop Loss:</strong> $${data.stop_loss}</p>
+                            <p><strong>Take Profit Level 1:</strong> $${data.take_profit_1}</p>
+                            <p><strong>Take Profit Level 2:</strong> $${data.take_profit_2}</p>
+                            <p><strong>ATR (Volatility):</strong> $${data.atr}</p>
+                            <p><em>Disclaimer: This is not financial advice. Trading involves risk.</em></p>
+                            <div id="in-depth">
+                                <h3>In-Depth Analysis:</h3>
+                                <p>${data.in_depth_analysis}</p>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    resultsDiv.innerHTML = `<p>Error: Unable to fetch data</p>`;
+                });
+        }
+    </script>
+</body>
+</html>
